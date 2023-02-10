@@ -4,73 +4,67 @@ declare(strict_types=1);
 
 namespace Orders;
 
+use Orders\Logger\Order\OrderProcessLogger\OrderProcessBaseLogger;
+use Orders\Logger\Order\OrderResultLogger\OrderResultBaseLogger;
+use Orders\Validators\Order\OrderValidatorInterface;
+
 class OrderProcessor
 {
-	private OrderValidator $validator;
-	private OrderDeliveryDetails $orderDeliveryDetails;
+    private bool $isOrderValid = false;
 
-	public function __construct(OrderDeliveryDetails $orderDeliveryDetails)
+	public function __construct(
+        private OrderDeliveryDetails $orderDeliveryDetails,
+        private OrderProcessBaseLogger $orderProcessLogger,
+        private OrderResultBaseLogger $orderResultLogger,
+        private OrderValidatorInterface $orderValidator
+    )
+	{}
+
+	public function process(Order $order): self
 	{
-		$this->orderDeliveryDetails = $orderDeliveryDetails;
-		$this->validator = OrderValidator::create();
+        $this->orderProcessLogger->log("Processing started, OrderId: {$order->getOrderId()}");
+
+		if (!$this->isOrderValid = $this->orderValidator->validateOrder($order)) {
+            $this->orderProcessLogger->log("Order is invalid");
+            return $this;
+        }
+
+        $this->orderProcessLogger->log("Order is valid");
+
+        $this->addDeliveryCostLargeItem($order);
+
+        if ($order->getIsManual()) {
+            $this->orderProcessLogger->log("Order \"{$order->getOrderId()}\" NEEDS MANUAL PROCESSING");
+        } else {
+            $this->orderProcessLogger->log("Order \"{$order->getOrderId()}\" WILL BE PROCESSED AUTOMATICALLY");
+        }
+
+        $order->setDeliveryDetails(
+            $this->orderDeliveryDetails->getDeliveryDetails(
+                count($order->getItems())
+            )
+        );
+
+        return $this;
 	}
 
-	/**
-	 * @param $order Order
-	 */
-	public function process($order)
-	{
-		ob_start();
-		echo "Processing started, OrderId: {$order->getOrderId()}\n";
-		$this->validator->validate($order);
+    public function saveLogs(): self
+    {
+        $this->orderResultLogger
+            ->saveOrderLog($this->isOrderValid);
 
-		if ($order->getIsValid()) {
-			echo "Order is valid\n";
-			$this->addDeliveryCostLargeItem($order);
-			if ($order->getIsManual()) {
-				echo "Order \"" . $order->getOrderId() . "\" NEEDS MANUAL PROCESSING\n";
-			} else {
-				echo "Order \"" . $order->getOrderId() . "\" WILL BE PROCESSED AUTOMATICALLY\n";
-			}
-			$deliveryDetails = $this->orderDeliveryDetails->getDeliveryDetails(count($order->getItems()));
-			$order->setDeliveryDetails($deliveryDetails);
-		} else {
-			echo "Order is invalid\n";
-		}
+        $this->orderProcessLogger
+            ->saveOrderLog($this->isOrderValid);
 
-		$this->printToFile($order);
-	}
+        return $this;
+    }
 
-	/**
-	 * @param $order Order
-	 */
-	public function addDeliveryCostLargeItem($order)
+	private function addDeliveryCostLargeItem(Order $order): void
 	{
 		foreach ($order->getItems() as $item) {
 			if (in_array($item, [3231, 9823])) {
 				$order->setTotalAmount($order->getTotalAmount() + 100);
 			}
-		}
-	}
-
-	public function printToFile(Order $order)
-	{
-		$result = ob_get_contents();
-		ob_end_clean();
-
-		if ($order->getIsValid()) {
-			$lines = explode("\n", $result);
-			$lineWithoutDebugInfo = [];
-			foreach ($lines as $line) {
-				if (strpos($line, 'Reason:') === false) {
-					$lineWithoutDebugInfo[] = $line;
-				}
-			}
-		}
-
-		file_put_contents('orderProcessLog', @file_get_contents('orderProcessLog') . implode("\n", $lineWithoutDebugInfo ?? [$result] ));
-		if ($order->getIsValid()) {
-			file_put_contents('result', @file_get_contents('result') . $order->getOrderId() . '-' . implode(',', $order->getItems()) . '-' . $order->getDeliveryDetails() . '-' . ($order->getIsManual() ? 1 : 0) . '-' . $order->getTotalAmount() . '-' . $order->getName() . "\n");
 		}
 	}
 }
