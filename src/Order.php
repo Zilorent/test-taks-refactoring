@@ -1,71 +1,101 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Orders;
 
 
 class Order
 {
-	/**
-	 * @var int
-	 */
-	public $order_id;
-	/**
-	 * @var bool
-	 */
-	public $is_manual = false;
-	/**
-	 * @var string
-	 */
-	public $name;
-	/**
-	 * @var array
-	 */
-	public $items;
-	/**
-	 * @var float
-	 */
-	public $totalAmount;
-	/**
-	 * @var string
-	 */
-	public  $deliveryDetails;
+	private int $orderId;
+    private bool $isManual = false;
+    private string $name;
+    private array $items;
+    private float $totalAmount;
+    private string $deliveryDetails;
+    private bool $isValid;
 
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name)
+	public function setName(string $name): self
 	{
 		$this->name = $name;
+
+        return $this;
 	}
 
-	/**
-	 * @param array $items
-	 */
-	public function setItems(array $items)
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+	public function setItems(array $items): self
 	{
 		$this->items = $items;
+
+        return $this;
 	}
 
-	/**
-	 * @param float $totalAmount
-	 */
-	public function setTotalAmount(float $totalAmount)
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+	public function setTotalAmount(float $totalAmount): self
 	{
 		$this->totalAmount = $totalAmount;
+
+        return $this;
 	}
 
-	/**
-	 * @param int $order_id
-	 */
-	public function setOrderId(int $order_id)
+    public function getTotalAmount(): float
+    {
+        return $this->totalAmount;
+    }
+
+	public function setOrderId(int $orderId): self
 	{
-		$this->order_id = $order_id;
+		$this->orderId = $orderId;
+
+        return $this;
 	}
 
-	public $is_valid;
+    public function getOrderId(): int
+    {
+        return $this->orderId;
+    }
 
-	public function setDeliveryDetails($deliveryDetails)
+	public function setDeliveryDetails(string $deliveryDetails): self
 	{
 		$this->deliveryDetails = $deliveryDetails;
+
+        return $this;
 	}
+
+    public function getDeliveryDetails(): string
+    {
+        return $this->deliveryDetails;
+    }
+
+    public function setIsValid(bool $isValid): self
+    {
+        $this->isValid = $isValid;
+
+        return $this;
+    }
+
+    public function getIsValid(): bool
+    {
+        return $this->isValid;
+    }
+
+    public function setIsManual(bool $isManual): self
+    {
+        $this->isManual = $isManual;
+
+        return $this;
+    }
+
+    public function getIsManual(): bool
+    {
+        return $this->isManual;
+    }
 }

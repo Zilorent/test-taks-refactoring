@@ -5,14 +5,19 @@ namespace Orders;
 
 class OrderValidator
 {
-	public $minimumAmount;
+	private int $minimumAmount;
 
-	public function setMinimumAmount(int $amount)
+	public function setMinimumAmount(int $amount): void
 	{
 		$this->minimumAmount = $amount;
 	}
 
-    public static function create()
+    public function getMinimumAmount(): int
+    {
+        return $this->minimumAmount;
+    }
+
+    public static function create(): self
     {
     	$validator = new self();
 	    $validator->setMinimumAmount(file_get_contents('input/minimumAmount'));
@@ -22,19 +27,19 @@ class OrderValidator
 	/**
 	 * @param $order Order
 	 */
-    public function validate($order)
+    public function validate(Order $order): void
     {
 	    $is_valid = true;
-	    if (!is_string($order->name) || !(strlen($order->name) > 2) || !($order->totalAmount > 0) || $order->totalAmount < $this->minimumAmount) {
+	    if (!is_string($order->getName()) || !(strlen($order->getName()) > 2) || !($order->getTotalAmount() > 0) || $order->getTotalAmount() < $this->getMinimumAmount()) {
 		    $is_valid = false;
 	    }
 
-	    foreach ($order->items as $item_id) {
+	    foreach ($order->getItems() as $item_id) {
 		    if (!is_int($item_id)) {
 			    $is_valid = false;
 		    }
 	    }
 
-	    $order->is_valid = $is_valid;
+        $order->setIsValid($is_valid);
     }
 }
