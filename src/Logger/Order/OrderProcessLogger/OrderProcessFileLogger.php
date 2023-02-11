@@ -18,6 +18,6 @@ class OrderProcessFileLogger extends OrderProcessBaseLogger
             }
         }
 
-        file_put_contents('orderProcessLog', @file_get_contents('orderProcessLog') . implode("\n", $lineWithoutDebugInfo ?? $this->logs ));
+        $this->storage->addToStorage('orderProcessLog', implode("\n", $lineWithoutDebugInfo ?? $this->logs ));
     }
 }

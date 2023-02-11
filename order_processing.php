@@ -6,8 +6,9 @@ use Orders\Order;
 use Orders\OrderDeliveryDetails;
 use Orders\OrderProcessor;
 use Orders\Logger\Order\OrderProcessLogger\OrderProcessFileLogger;
-use Orders\Validators\Order\BasicOrderValidator;
 use Orders\Logger\Order\OrderResultLogger\OrderResultFileLogger;
+use Orders\Validators\Order\OrderBasicValidator;
+use Orders\Storage\FileStorage;
 
 require_once 'vendor/autoload.php';
 
@@ -20,11 +21,20 @@ $order
     ])
     ->setTotalAmount(346.2);
 
+$storage = new FileStorage();
+
 $orderProcessor = new OrderProcessor(
     new OrderDeliveryDetails(),
-    new OrderProcessFileLogger(),
-    new OrderResultFileLogger($order),
-    new BasicOrderValidator()
+    new OrderProcessFileLogger(
+        $storage
+    ),
+    new OrderResultFileLogger(
+        $storage,
+        $order
+    ),
+    new OrderBasicValidator(
+        $storage
+    )
 );
 $orderProcessor
     ->process($order)

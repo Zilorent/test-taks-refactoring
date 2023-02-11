@@ -12,15 +12,13 @@ class OrderResultFileLogger extends OrderResultBaseLogger
             return ;
         }
 
-        file_put_contents('result', @file_get_contents('result') .
-            implode('-',[
-                $this->order->getOrderId(),
-                implode(',', $this->order->getItems()),
-                $this->order->getDeliveryDetails(),
-                ($this->order->getIsManual() ? 1 : 0),
-                $this->order->getTotalAmount(),
-                $this->order->getName(),
-            ])
-        );
+        $this->storage->addToStorage('result', implode('-',[
+            $this->order->getOrderId(),
+            implode(',', $this->order->getItems()),
+            $this->order->getDeliveryDetails(),
+            ($this->order->getIsManual() ? 1 : 0),
+            $this->order->getTotalAmount(),
+            $this->order->getName(),
+        ]));
     }
 }

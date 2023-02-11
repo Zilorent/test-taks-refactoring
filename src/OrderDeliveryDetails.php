@@ -1,10 +1,8 @@
 <?php
-/**
- * @author Timofey Khokhlovskii <timofey.khokhlovskii@internetstores.com>
- */
+
+declare(strict_types=1);
 
 namespace Orders;
-
 
 class OrderDeliveryDetails
 {

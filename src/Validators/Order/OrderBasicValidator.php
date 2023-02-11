@@ -6,15 +6,8 @@ namespace Orders\Validators\Order;
 
 use Orders\Order;
 
-class BasicOrderValidator implements  OrderValidatorInterface
+class OrderBasicValidator extends  OrderBaseValidator
 {
-    private int $minimumAmount;
-
-    public function __construct()
-    {
-        $this->setMinimumAmount((int)file_get_contents('input/minimumAmount'));
-    }
-
     public function validateOrder(Order $order): bool
     {
         if (
@@ -35,13 +28,8 @@ class BasicOrderValidator implements  OrderValidatorInterface
         return true;
     }
 
-    private function setMinimumAmount(int $amount): void
-    {
-        $this->minimumAmount = $amount;
-    }
-
     private function getMinimumAmount(): int
     {
-        return $this->minimumAmount;
+        return (int)$this->storage->readFromStorage('input/minimumAmount');
     }
 }

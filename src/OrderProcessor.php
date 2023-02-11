@@ -6,7 +6,7 @@ namespace Orders;
 
 use Orders\Logger\Order\OrderProcessLogger\OrderProcessBaseLogger;
 use Orders\Logger\Order\OrderResultLogger\OrderResultBaseLogger;
-use Orders\Validators\Order\OrderValidatorInterface;
+use Orders\Validators\Order\OrderBaseValidator;
 
 class OrderProcessor
 {
@@ -16,7 +16,7 @@ class OrderProcessor
         private OrderDeliveryDetails $orderDeliveryDetails,
         private OrderProcessBaseLogger $orderProcessLogger,
         private OrderResultBaseLogger $orderResultLogger,
-        private OrderValidatorInterface $orderValidator
+        private OrderBaseValidator $orderValidator
     )
 	{}
 
