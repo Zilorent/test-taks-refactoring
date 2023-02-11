@@ -9,6 +9,7 @@ use Orders\Logger\Order\OrderProcessLogger\OrderProcessFileLogger;
 use Orders\Logger\Order\OrderResultLogger\OrderResultFileLogger;
 use Orders\Validators\Order\OrderBasicValidator;
 use Orders\Storage\FileStorage;
+use Orders\Items\KeyboardItem;
 
 require_once 'vendor/autoload.php';
 
@@ -17,7 +18,7 @@ $order
     ->setOrderId(2)
     ->setName('John')
     ->setItems([
-        6654,
+        new KeyboardItem(),
     ])
     ->setTotalAmount(346.2);
 

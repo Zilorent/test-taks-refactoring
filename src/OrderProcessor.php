@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Orders;
 
+use Orders\Items\ItemBase;
 use Orders\Logger\Order\OrderProcessLogger\OrderProcessBaseLogger;
 use Orders\Logger\Order\OrderResultLogger\OrderResultBaseLogger;
 use Orders\Validators\Order\OrderBaseValidator;
@@ -33,11 +34,7 @@ class OrderProcessor
 
         $this->addDeliveryCostLargeItem($order);
 
-        if ($order->getIsManual()) {
-            $this->orderProcessLogger->log("Order \"{$order->getOrderId()}\" NEEDS MANUAL PROCESSING");
-        } else {
-            $this->orderProcessLogger->log("Order \"{$order->getOrderId()}\" WILL BE PROCESSED AUTOMATICALLY");
-        }
+        $this->orderProcessLogger->log("Order \"{$order->getOrderId()}\"" . ($order->getIsManual() ? 'NEEDS MANUAL PROCESSING' : 'WILL BE PROCESSED AUTOMATICALLY'));
 
         $order->setDeliveryDetails(
             $this->orderDeliveryDetails->getDeliveryDetails(
@@ -61,8 +58,9 @@ class OrderProcessor
 
 	private function addDeliveryCostLargeItem(Order $order): void
 	{
-		foreach ($order->getItems() as $item) {
-			if (in_array($item, [3231, 9823])) {
+        /** @var ItemBase $item */
+        foreach ($order->getItems() as $item) {
+			if ($item->isDeliveryCostLarge()) {
 				$order->setTotalAmount($order->getTotalAmount() + 100);
 			}
 		}

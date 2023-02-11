@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Orders;
 
 
+use Orders\Exceptions\WrongItemTypeException;
+use Orders\Items\ItemBase;
+
 class Order
 {
 	private int $orderId;
@@ -13,7 +16,6 @@ class Order
     private array $items;
     private float $totalAmount;
     private string $deliveryDetails;
-    private bool $isValid;
 
 	public function setName(string $name): self
 	{
@@ -29,6 +31,12 @@ class Order
 
 	public function setItems(array $items): self
 	{
+        array_map(function($item){
+            if (!$item instanceof ItemBase) {
+                throw new WrongItemTypeException();
+            }
+        }, $items);
+
 		$this->items = $items;
 
         return $this;
@@ -73,25 +81,6 @@ class Order
     public function getDeliveryDetails(): string
     {
         return $this->deliveryDetails;
-    }
-
-    public function setIsValid(bool $isValid): self
-    {
-        $this->isValid = $isValid;
-
-        return $this;
-    }
-
-    public function getIsValid(): bool
-    {
-        return $this->isValid;
-    }
-
-    public function setIsManual(bool $isManual): self
-    {
-        $this->isManual = $isManual;
-
-        return $this;
     }
 
     public function getIsManual(): bool

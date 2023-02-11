@@ -6,12 +6,8 @@ namespace Orders;
 
 class OrderDeliveryDetails
 {
-	public static function getDeliveryDetails($productsCount)
+	public static function getDeliveryDetails($productsCount): string
 	{
-		if ($productsCount > 1) {
-			return 'Order delivery time: 2 days';
-		} else {
-			return 'Order delivery time: 1 day';
-		}
+        return "Order delivery time: {$productsCount} day" . ($productsCount>1?'s':'');
 	}
 }

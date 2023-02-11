@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Orders\Validators\Order;
 
+use Orders\Items\ItemBase;
 use Orders\Order;
 
 class OrderBasicValidator extends  OrderBaseValidator
@@ -19,8 +20,8 @@ class OrderBasicValidator extends  OrderBaseValidator
             return false;
         }
 
-        foreach ($order->getItems() as $item_id) {
-            if (!is_int($item_id)) {
+        foreach ($order->getItems() as $item) {
+            if (!$item instanceof ItemBase) {
                 return false;
             }
         }
